@@ -1,11 +1,15 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
+<title>{% block title %}{% endblock %} - Inkling</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com"> 
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+<link href="https://fonts.googleapis.com/css2?family=Barlow&family=Comforter+Brush&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+
 <nav>
-  <h1><a href="{{ url_for('index') }}">Flaskr</a></h1>
-  <ul>
+  <ul class="alignNav">
+    <li><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='inklinglogo.png')}}" class="logoImg" href="{{ url_for('index') }}"></a></li>
     {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
+      <li><span>Hello {{ g.user['username'] }}!</span>
       <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>

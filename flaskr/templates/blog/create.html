@@ -1,15 +1,39 @@
-{% extends 'base.html' %}
-
-{% block header %}
-  <h1>{% block title %}New Post{% endblock %}</h1>
-{% endblock %}
-
-{% block content %}
-  <form method="post">
-    <label for="title">Title</label>
+{% extends 'base.html' %} {% block header %}
+<h1 class="headHead">{% block title %}New Post{% endblock %}</h1>
+{% endblock %} {% block content %}
+<form method="post">
+	<label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+    <textarea name="body" id="body"required>{{ request.form['body'] }}</textarea>
+    <div id="anonymous">
+      <p>Would you like your inkling to be uploaded anonymously?</p>
+      <input name="anon" id="yesanon" type="radio" value="True">
+      <label for="yesanon">Yes</label>
+      <input name="anon" id="noanon" type="radio" value="False">
+      <label for="noanon">No</label>
+    </div>
+    <p>Pick up to 3 categories! (if none are picked, your post will not be discoverable outside of the random generator.)</p>
+    <ul id="categories">
+      <li><input name="category" class="tech" id="tech" type="checkbox" value="Tech">
+      <label for="category">Tech</label></li>
+      <li><input name="category" id="hw" type="checkbox" value="Health + Wellness">
+      <label for="category">Health + Wellness</label></li>
+      <li><input name="category" id="recreation" type="checkbox" value="Recreation">
+      <label for="category">Recreation</label></li>
+      <li><input name="category" id="finance" type="checkbox" value="Finance">
+      <label for="category">Finance</label></li>
+      <li><input name="category" id="education" type="checkbox" value="Education">
+      <label for="category">Education</label></li>
+      <li><input name="category" id="ap" type="checkbox" value="Arts + Performance">
+      <label for="category">Arts + Performance</label></li>
+      <li><input name="category" id="ll" type="checkbox" value="Literature + Language">
+      <label for="category">Literature + Language</label></li>
+      <li><input name="category" id="science" type="checkbox" value="Science">
+      <label for="category">Science</label></li>
+      <li><input name="category" id="other" type="checkbox" value="Other">
+      <label for="category">Other</label></li>
+    </ul>
     <input type="submit" value="Save">
   </form>
 {% endblock %}

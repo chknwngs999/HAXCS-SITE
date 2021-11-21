@@ -1,3 +1,10 @@
+#added anonymous, category
+#upvote/downvote support
+
+#change display of each post to include anonymity, 
+#update file when updated?
+#update delete function to remove from tables
+
 from flask import Blueprint
 from flask import flash
 from flask import g
@@ -13,15 +20,25 @@ from flaskr.db import get_db
 bp = Blueprint("blog", __name__)
 
 
-@bp.route("/")
+@bp.route("/", methods=["GET", "POST"])
 def index():
     """Show all the posts, most recent first."""
     db = get_db()
     posts = db.execute(
-        "SELECT p.id, title, body, created, author_id, username"
+        "SELECT p.id, title, body, anonymity, created, author_id, username"
         " FROM post p JOIN user u ON p.author_id = u.id"
         " ORDER BY created DESC"
     ).fetchall()
+    if request.method == "POST":
+      post_id = request.form['post_id']
+      comment = request.form['comment']
+      db = get_db()
+      db.execute(
+          "INSERT INTO comments (post_id, comment) VALUES (?, ?)",
+          (post_id, comment),
+      )
+      db.commit()
+      
     return render_template("blog/index.html", posts=posts)
 
 
@@ -40,7 +57,7 @@ def get_post(id, check_author=True):
     post = (
         get_db()
         .execute(
-            "SELECT p.id, title, body, created, author_id, username"
+            "SELECT p.id, title, body, created, author_id, username, numUpvotes, numDownvotes, percentApproval"
             " FROM post p JOIN user u ON p.author_id = u.id"
             " WHERE p.id = ?",
             (id,),
@@ -64,24 +81,59 @@ def create():
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
+        anon = request.form["anon"]
+        if anon == "True":
+          anon = 1
+        else:
+          anon = 0
+        categories = request.form.getlist("category")
+
         error = None
 
+        if len(categories) > 3:
+          error = "Please select 3 categories at most."
+        elif len(categories) == 0:
+          error = "Please select at least 1 category."
         if not title:
-            error = "Title is required."
+            error = "Please input a title."
 
         if error is not None:
             flash(error)
         else:
             db = get_db()
             db.execute(
-                "INSERT INTO post (title, body, author_id) VALUES (?, ?, ?)",
-                (title, body, g.user["id"]),
+                "INSERT INTO post (title, body, anonymity, author_id, numUpvotes, numDownvotes, percentApproval) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (title, body, anon, g.user["id"], 1, 0, 100.0),
             )
             db.commit()
+            post_id = (get_db().execute(
+                      "SELECT MAX(id)"
+                      "FROM post"
+            ).fetchone())
+            for category in categories:
+              db.execute(
+                "INSERT INTO categories (post_id, category) VALUES (?, ?)", (post_id[0], category)
+              )
+            db.commit()
             return redirect(url_for("blog.index"))
-
     return render_template("blog/create.html")
 
+@bp.route("/<int:id>/indinkling")
+@login_required
+def indinkling(id):
+  post = get_post(id)
+  comments = (
+        get_db()
+        .execute(
+            "SELECT comment"
+            " FROM comments"
+            " WHERE post_id = ?",
+            (id,),
+        )
+    )
+  
+  return render_template("blog/indinkling.html", post=post, comments=comments)
+  
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
@@ -95,7 +147,7 @@ def update(id):
         error = None
 
         if not title:
-            error = "Title is required."
+            error = "Please input a title."
 
         if error is not None:
             flash(error)

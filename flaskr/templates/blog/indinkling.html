@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{%block content%}
+{% if g.user %}
+  <h1>{{ post['title'] }}</h1>
+  <div class="aboutStats">Published on {{ post['created'].strftime('%Y-%m-%d') }}</div>
+  <hr>
+  <h1>Percent Approval: {{ post['percentApproval'] }}%</h1>
+  <h1>Comments</h1>
+  <ul>
+  {% for comment in comments %}
+  <li>{{ comment['comment'] }}</li>
+  {% if not loop.last %}
+    <hr>
+  {% endif %}
+  {% endfor %}
+  </ul>
+  
+  <!-- display comments -->
+{% else %}
+  <h3>Log in or create an account to submit your inkling!</h3>
+{% endif %}
+{% endblock %}
