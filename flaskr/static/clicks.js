@@ -4,8 +4,6 @@ var numUpvotes = 1;
 var numDownvotes = 0;
 var percentApproval = (numUpvotes/(numUpvotes + numDownvotes)) * 100;
 
-
-
 window.onload = function(){
   var uv = document.getElementById("uvButton");
   var dv = document.getElementById("dvButton");
