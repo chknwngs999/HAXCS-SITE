@@ -1,1 +1,1 @@
-#LEC Hacks - HAXCS Submission
+# LEC Hacks - HAXCS Submission
